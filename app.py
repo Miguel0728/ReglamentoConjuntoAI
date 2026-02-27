@@ -109,5 +109,12 @@ def init_app():
     return app
 
 app = init_app()
+
+# Pre-cargar el RAG engine al iniciar (necesario para gunicorn --preload)
+# Esto evita que cada worker cargue el modelo por separado (OOM en Render free tier)
+logger.info("⚡ Pre-cargando RAG Engine al inicio...")
+get_rag_engine()
+logger.info("✅ RAG Engine listo")
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 8000)), debug=True)
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 8000)), debug=False)
